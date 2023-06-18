@@ -42,7 +42,7 @@ def main(D, dataset):
         new_row_df = pd.DataFrame([list], columns=df.columns)
         df = pd.concat([df, new_row_df])
         print(df)
-    df.to_excel("outputRandomPlusStd.xlsx")
+    df.to_excel("outputRandomPlusMean.xlsx")
     
 
 def read_data(fn, tag_col = 0, attr_name = False):

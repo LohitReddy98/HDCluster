@@ -42,7 +42,7 @@ def main(D, dataset):
         new_row_df = pd.DataFrame([list], columns=df.columns)
         df = pd.concat([df, new_row_df])
         print(df)
-    df.to_excel("output.xlsx")
+    df.to_excel("outputRandomPlusStd.xlsx")
     
 
 def read_data(fn, tag_col = 0, attr_name = False):
@@ -153,7 +153,7 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
     PHI = np.random.normal(size=(dim, Xb.shape[1]))
 
     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1,1)
-
+    random_sparse_function(PHI,sparsity)
     start = time.time()
     # X_h = np.sign(PHI.dot(Xb.T).T)
     X_h = (PHI.dot(Xb.T).T)
@@ -291,19 +291,12 @@ def compute_similarity(X, C):
     C_ = C / np.clip(np.linalg.norm(C, axis=1), 1, np.inf).reshape(-1,1)
     return np.clip(C_.dot(X_.T).T, 0, np.inf)
 
-def sparse_function(mat,s=5):
-        mean_val = np.mean(mat)
-        threshold_val = np.percentile(np.abs(mat - mean_val), 5) + mean_val
-
-# Create new sparse array
-        sparse_PHI = np.where(np.abs(mat - mean_val) > threshold_val, mat, 0)
-
-# Calculate sparsity
-        sparsity = np.count_nonzero(sparse_PHI) / np.size(sparse_PHI)
-        print(sparsity)
+def random_sparse_function(mat,s=5):
         for i in range(len(mat)):
             for j in range(len(mat[0])):
                 mat[i][j]=mat[i][j] if randint(1,100)<=s else 0
+        # print(s)
+        # print((mat != 0).sum().sum()/mat.size)
         return mat
 
 def make_sparse_mean(mat,s=5):

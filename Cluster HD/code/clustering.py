@@ -28,17 +28,20 @@ LOG.setLevel(logging.INFO)
 def main(D, dataset):
     hd_encoding_dim     = D
     #LOG.info("--------- STD: {} ---------".format(cluster_std))
-    list = ["Tetra"]
-    sparseList=["0","60","50","40","30","20","10","5","1"]
-    dict={"100":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
+    list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
+    sparseList=["100","60","50","40","30","20","10","5","1"]
+    dict={"Dataset":{},"100":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
 
     df=pd.DataFrame(dict)
+
     for data in list:
         list=[]
+        list.append(data)
         for sparsity in sparseList:
             list.append(do_exp(hd_encoding_dim, data,False,int(sparsity)))
-        df.append(list)
-    print(df)
+        new_row_df = pd.DataFrame([list], columns=df.columns)
+        df = pd.concat([df, new_row_df])
+        print(df)
     df.to_excel("output.xlsx")
     
 
@@ -58,12 +61,12 @@ def read_data(fn, tag_col = 0, attr_name = False):
 
 def do_exp(dim, dataset, quantize=False,sparsity=100):
     if(dataset == 'isolet' or dataset == 'iris'):
-        train_data_file_name= '../dataset/' + dataset + '/' + dataset + '_train.choir_dat'
+        train_data_file_name= '../dataset/FCPS/' + dataset + '/' + dataset + '_train.choir_dat'
         nFeatures, nClasses, x_train, y_train = parse_example.readChoirDat(train_data_file_name)
         X_ = x_train
         y_ = y_train
     else:
-        X_, y_ = read_data('C:/Users/tekul002/Downloads/HD-Clustering-master/HD-Clustering-master/CPU/Cluster HD/dataset/FCPS/%s.csv' % dataset, 0, True)
+        X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 
     X_float = []
     for x in X_:
@@ -289,10 +292,6 @@ def compute_similarity(X, C):
     return np.clip(C_.dot(X_.T).T, 0, np.inf)
 
 def sparse_function(mat,s=5):
-        # print(mat[0])
-        # print(mat.shape)
-        # pd=pd.dataFrame(mat)
-        # print(pd.shape())
         mean_val = np.mean(mat)
         threshold_val = np.percentile(np.abs(mat - mean_val), 5) + mean_val
 
@@ -308,8 +307,6 @@ def sparse_function(mat,s=5):
         return mat
 
 def make_sparse_mean(mat,s=5):
-    if s==0:
-        return mat
     # calculate the mean of each column
     means = np.mean(mat, axis=0)
     # iterate over each column
@@ -321,37 +318,31 @@ def make_sparse_mean(mat,s=5):
         # find the s% smallest absolute differences means that we are taking data near to mean
         k = int(s*0.01 * len(abs_diff))
         if k >= len(abs_diff):
-            threshold = np.max(abs_diff)
+            threshold = np.min(abs_diff)
         else:
             # find k largest element
             threshold = np.partition(abs_diff, -k-1)[-k-1] 
 
         # set all values in the column that are below the threshold to 0
         mat[abs_diff < threshold, i] = 0
-    print(s)
-    print(np.count_nonzero(mat == 0)/mat.size)
+    # print(s)
+    # print((mat != 0).sum().sum()/mat.size)
     return mat
 
 def make_sparse_standard_deviation(mat,s=5):
-    if s==0:
-        return mat
     # Step 1: Calculate the standard deviation for each dimension (column)
     standard_deviations = np.std(mat, axis=0)
     k = int(s*0.01 * len(standard_deviations))
-
-    threshold = np.partition(standard_deviations, -k-1)[-k-1]
+    if k >= len(standard_deviations):
+            threshold = np.min(standard_deviations)
+    else:
+            threshold = np.partition(standard_deviations, -k-1)[-k-1]
 
     non_relevant_dimensions = np.where(standard_deviations < threshold)[0]
     mat[:, non_relevant_dimensions] = 0
-    print(s)
-    print(np.count_nonzero(mat == 0)/mat.size)
+    # print(s)
+    # print((mat != 0).sum().sum()/mat.size)
     return mat
-
-# def sparse_function_locality(mat,s=5):
-#         for i in range(len(mat)):
-#             for j in range(len(mat[0])):
-#                 mat[i][j]=mat[i][j] if randint(1,100)<5 else 0
-#         return mat
 
 if __name__=="__main__":
     # if len(sys.argv) != 3:

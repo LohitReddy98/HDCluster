@@ -42,7 +42,7 @@ def main(D, dataset):
         new_row_df = pd.DataFrame([list], columns=df.columns)
         df = pd.concat([df, new_row_df])
         print(df)
-    df.to_excel("output.xlsx")
+    df.to_excel("outputmean.xlsx")
     
 
 def read_data(fn, tag_col = 0, attr_name = False):
@@ -160,7 +160,7 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
 
     end = time.time()
     encoding_phd_time = end - start
-    np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    np.sign(make_sparse_mean(X_h,sparsity))
     KH = KMeans(n_clusters = num_clusters, n_init = 5)
     start = time.time()
     KH.fit(X_h)

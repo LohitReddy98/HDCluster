@@ -155,12 +155,12 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1,1)
     random_sparse_function(PHI,sparsity)
     start = time.time()
-    # X_h = np.sign(PHI.dot(Xb.T).T)
-    X_h = (PHI.dot(Xb.T).T)
+    X_h = np.sign(PHI.dot(Xb.T).T)
+    # X_h = (PHI.dot(Xb.T).T)
 
     end = time.time()
     encoding_phd_time = end - start
-    np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    # np.sign(make_sparse_standard_deviation(X_h,sparsity))
     KH = KMeans(n_clusters = num_clusters, n_init = 5)
     start = time.time()
     KH.fit(X_h)

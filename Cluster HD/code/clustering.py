@@ -29,8 +29,8 @@ def main(D, dataset):
     hd_encoding_dim     = D
     #LOG.info("--------- STD: {} ---------".format(cluster_std))
     list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
-    sparseList=["100","60","50","40","30","20","10","5","1"]
-    dict={"Dataset":{},"100":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
+    sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
+    dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
 
     df=pd.DataFrame(dict)
 

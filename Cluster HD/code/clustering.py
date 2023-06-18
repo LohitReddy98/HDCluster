@@ -160,7 +160,7 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
 
     end = time.time()
     encoding_phd_time = end - start
-    np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    np.sign(make_sparse_mean(X_h,sparsity))
     KH = KMeans(n_clusters = num_clusters, n_init = 5)
     start = time.time()
     KH.fit(X_h)

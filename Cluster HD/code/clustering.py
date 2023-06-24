@@ -7,6 +7,8 @@ import parse_example
 import pandas as pd
 
 import numpy as np
+from sklearn.datasets import fetch_openml
+
 #import matplotlib.pyplot as plt
 
 from idhv import HDModel
@@ -28,9 +30,12 @@ LOG.setLevel(logging.INFO)
 def main(D, dataset):
     hd_encoding_dim     = D
     #LOG.info("--------- STD: {} ---------".format(cluster_std))
-    list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
-    sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
-    dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
+    # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
+    # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
+    # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
+    list = ["Mnist","MnistCNN128"]
+    sparseList=["100"]
+    dict={"Dataset":{},"100":{}}
 
     df=pd.DataFrame(dict)
 
@@ -58,6 +63,22 @@ def read_data(fn, tag_col = 0, attr_name = False):
             X_.append(data)
             y_.append(data[tag_col])
     return X_, y_
+    
+def genearate_mnist_csv():
+
+    # Load the MNIST dataset from scikit-learn
+    mnist = fetch_openml('mnist_784')
+
+    # Separate features (images) and labels
+    X = mnist.data
+    y = mnist.target.astype(int)
+
+    # Combine the flattened images and labels
+    data = np.column_stack((y, X))
+    df = pd.DataFrame(data)
+    df.to_csv('Mnist.csv', index=False)
+
+
 
 def do_exp(dim, dataset, quantize=False,sparsity=100):
     if(dataset == 'isolet' or dataset == 'iris'):
@@ -65,6 +86,9 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
         nFeatures, nClasses, x_train, y_train = parse_example.readChoirDat(train_data_file_name)
         X_ = x_train
         y_ = y_train
+    elif (dataset=='Mnist'):
+         genearate_mnist_csv()
+         X_, y_ = read_data('%s.csv' % dataset, 0, True)
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 

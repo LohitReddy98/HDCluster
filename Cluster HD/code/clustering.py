@@ -33,7 +33,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["Mnist","MnistCNN128"]
+    list = ["FashionMnist","Mnist128_6_layers","Mnist128_8_layers","FashionMnist128_6_layers","FashionMnist128_8_layers"]
     sparseList=["100"]
     dict={"Dataset":{},"100":{}}
 
@@ -78,6 +78,21 @@ def genearate_mnist_csv():
     df = pd.DataFrame(data)
     df.to_csv('Mnist.csv', index=False)
 
+def genearate_fasion_mnist_csv():
+
+    # Load the MNIST dataset from scikit-learn
+    mnist = fetch_openml('Fashion-MNIST', version=1)
+
+    # Separate features (images) and labels
+    X = mnist.data
+    y = mnist.target.astype(int)
+
+    # Combine the flattened images and labels
+    data = np.column_stack((y, X))
+    df = pd.DataFrame(data)
+    df.to_csv('FashionMnist.csv', index=False)
+
+
 
 
 def do_exp(dim, dataset, quantize=False,sparsity=100):
@@ -88,6 +103,9 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
         y_ = y_train
     elif (dataset=='Mnist'):
          genearate_mnist_csv()
+         X_, y_ = read_data('%s.csv' % dataset, 0, True)
+    elif (dataset=='FashionMnist'):
+         genearate_fasion_mnist_csv()
          X_, y_ = read_data('%s.csv' % dataset, 0, True)
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)

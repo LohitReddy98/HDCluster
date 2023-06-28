@@ -17,6 +17,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets import make_blobs, make_classification
+from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
@@ -33,7 +34,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["FashionMnist","Mnist128_6_layers","Mnist128_8_layers","FashionMnist128_6_layers","FashionMnist128_8_layers"]
+    list = ["cfar_10","Cfar10_128_6_layers"]
     sparseList=["100"]
     dict={"Dataset":{},"100":{}}
 
@@ -107,6 +108,13 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
     elif (dataset=='FashionMnist'):
          genearate_fasion_mnist_csv()
          X_, y_ = read_data('%s.csv' % dataset, 0, True)
+    elif (dataset=='cfar_10'):
+            (x_train, y_train), (x_test, y_test) =  keras.datasets.cifar10.load_data()
+            # Concatenate training and testing data
+            X_ = np.concatenate((x_train, x_test), axis=0)
+            y_ = np.concatenate((y_train, y_test), axis=0)
+            X_=X_.tolist()
+            y_=y_.tolist()
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 

@@ -128,6 +128,9 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
             X_=X_.tolist()
             y_=y_.tolist()
             X_=convert_to_grayscale(X_)
+            array = np.array(y_)
+            reshaped_array = array.reshape(60000)
+            y_=reshaped_array.tolist()
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 

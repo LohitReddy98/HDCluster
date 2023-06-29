@@ -93,7 +93,19 @@ def genearate_fasion_mnist_csv():
     df = pd.DataFrame(data)
     df.to_csv('FashionMnist.csv', index=False)
 
+def rgb_to_grayscale(rgb):
+    return 0.2989 * rgb[0] + 0.5870 * rgb[1] + 0.1140 * rgb[2]
 
+def convert_to_grayscale(X_):
+    matrix_grayscale = []
+    for row in X_:
+        grayscale_row = []
+        for feature in row:
+            for pixel in feature:
+                grayscale_value = rgb_to_grayscale(pixel)
+                grayscale_row.append(grayscale_value)
+        matrix_grayscale.append(grayscale_row)
+    return matrix_grayscale
 
 
 def do_exp(dim, dataset, quantize=False,sparsity=100):
@@ -115,6 +127,7 @@ def do_exp(dim, dataset, quantize=False,sparsity=100):
             y_ = np.concatenate((y_train, y_test), axis=0)
             X_=X_.tolist()
             y_=y_.tolist()
+            X_=convert_to_grayscale(X_)
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 

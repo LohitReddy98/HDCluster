@@ -48,7 +48,7 @@ def main(D, dataset):
      layer_no+=1
      feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
      feat=feature_extractor.predict(x_combined)
-     z=do_exp(hd_encoding_dim, "data",False,feat,y_combined)
+     z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
      print("layer "+layer+" final :"+z)
      print("feature_extractor "+len(feat))
 

@@ -155,7 +155,7 @@ def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
     X = np.array(X_float)
     y = np.array(list(map(lambda c: float(c) - 1, y_)))
     num_clusters = np.unique(y).shape[0]
-
+    print(num_clusters)
     #if num_features == 2:
         #plt.scatter(X[:,0], X[:,1], c=y, s=30, cmap=plt.cm.Paired)
 
@@ -232,21 +232,22 @@ def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
 
     Xb = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
     PHI = np.random.normal(size=(dim, Xb.shape[1]))
-
+    print("PHI",PHI)
     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1,1)
-    random_sparse_function(PHI,sparsity)
+    # random_sparse_function(PHI,sparsity)
     start = time.time()
     X_h = np.sign(PHI.dot(Xb.T).T)
     # X_h = (PHI.dot(Xb.T).T)
+    print("PHI",X_h)
 
-    end = time.time()
-    encoding_phd_time = end - start
-    # np.sign(make_sparse_standard_deviation(X_h,sparsity))
-    KH = KMeans(n_clusters = num_clusters, n_init = 5)
-    start = time.time()
-    KH.fit(X_h)
-    end = time.time()
-    kmeans_phd_fit_time = end - start
+    # end = time.time()
+    # encoding_phd_time = end - start
+    # # np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    # KH = KMeans(n_clusters = num_clusters, n_init = 5)
+    # start = time.time()
+    # KH.fit(X_h)
+    # end = time.time()
+    # kmeans_phd_fit_time = end - start
 
     # start = time.time()
     # lh = KH.predict(X_h)

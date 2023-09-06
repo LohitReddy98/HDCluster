@@ -147,6 +147,9 @@ def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
         # X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 
     X_float = []
+    print(X_.shape)
+    print(y_.shape)
+
     for x in X_:
         X_float.append(list(map(lambda c: float(c), x[:])))
     X = np.array(X_float)

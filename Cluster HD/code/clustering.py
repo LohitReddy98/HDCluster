@@ -44,13 +44,13 @@ def main(D, dataset):
     # df=pd.DataFrame(dict)
     model,  y_combined ,x_combined= get_mnist_model_from_cnn()
     layer_no=-1
-    # for layer in model.layers:
-    #  layer_no+=1
-    feature_extractor = keras.Model(inputs=model.inputs, outputs=model.layers[-2].output)
-    feat=feature_extractor.predict(x_combined).reshape(70000,-1)
-    z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
-    # print("layer "+layer+" final :"+z)
-    print("feature_extractor "+len(feat))
+    for layer in model.layers:
+        layer_no+=1
+        feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+        feat=feature_extractor.predict(x_combined).reshape(70000,-1)
+        z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
+        print("layer "+layer+" final :"+z)
+        print("feature_extractor "+len(feat))
 
     # for data in list:
     #     list=[]

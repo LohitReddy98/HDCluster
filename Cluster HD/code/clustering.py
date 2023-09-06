@@ -441,7 +441,7 @@ def get_mnist_model_from_cnn():
     )
     # Compile and train the model
     model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    model.fit(x_train, y_train, batch_size=128, epochs=1, validation_split=0.1)
+    model.fit(x_train, y_train, batch_size=128, epochs=20, validation_split=0.1)
     return model,np.concatenate((y_train, y_test)),np.concatenate((x_train, x_test))
 
 if __name__=="__main__":

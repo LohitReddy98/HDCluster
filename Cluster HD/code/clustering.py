@@ -44,18 +44,20 @@ def main(D, dataset):
     # df=pd.DataFrame(dict)
     model,  y_combined ,x_combined= get_mnist_model_from_cnn()
     layer_no=-1
-    # for layer in model.layers:
-    #     layer_no+=1
-    #     feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
-    #     feat=feature_extractor.predict(x_combined).reshape(70000,-1)
-    #     z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
-    #     print("layer "+layer+" final :"+z)
-    #     print("feature_extractor "+len(feat))
-    feature_extractor = keras.Model(inputs=model.inputs, outputs=model.layers[-2].output)
-    feat=feature_extractor.predict(x_combined).reshape(70000,-1)
-    z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
-    print("layer "+" final :"+z)
-    print("feature_extractor "+len(feat))
+    out=""
+    for layer in model.layers:
+        layer_no+=1
+        feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+        feat=feature_extractor.predict(x_combined).reshape(70000,-1)
+        z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
+        out+="layer "+layer+" final :"+z
+        out+="feature_extractor "+len(feat)
+	with open('example.txt', 'w') as file:
+          file.write(out)
+
+# The file is automatically closed when the 'with' block is exited
+
+    
 
     # for data in list:
     #     list=[]
@@ -448,7 +450,7 @@ def get_mnist_model_from_cnn():
     )
     # Compile and train the model
     model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    model.fit(x_train, y_train, batch_size=128, epochs=1, validation_split=0.1)
+    model.fit(x_train, y_train, batch_size=128, epochs=20, validation_split=0.1)
     return model,np.concatenate((y_train, y_test)),np.concatenate((x_train, x_test))
 
 if __name__=="__main__":

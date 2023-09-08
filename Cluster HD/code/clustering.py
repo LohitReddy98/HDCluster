@@ -52,7 +52,7 @@ def main(D, dataset):
         z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
         out+="layer "+layer+" final :"+z
         out+="feature_extractor "+len(feat)
-	with open('example.txt', 'w') as file:
+        with open('result.txt', 'w') as file:
           file.write(out)
 
 # The file is automatically closed when the 'with' block is exited

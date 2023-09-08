@@ -44,13 +44,18 @@ def main(D, dataset):
     # df=pd.DataFrame(dict)
     model,  y_combined ,x_combined= get_mnist_model_from_cnn()
     layer_no=-1
-    for layer in model.layers:
-        layer_no+=1
-        feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
-        feat=feature_extractor.predict(x_combined).reshape(70000,-1)
-        z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
-        print("layer "+layer+" final :"+z)
-        print("feature_extractor "+len(feat))
+    # for layer in model.layers:
+    #     layer_no+=1
+    #     feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+    #     feat=feature_extractor.predict(x_combined).reshape(70000,-1)
+    #     z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
+    #     print("layer "+layer+" final :"+z)
+    #     print("feature_extractor "+len(feat))
+    feature_extractor = keras.Model(inputs=model.inputs, outputs=model.layers[-2].output)
+    feat=feature_extractor.predict(x_combined).reshape(70000,-1)
+    z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
+    print("layer "+" final :"+z)
+    print("feature_extractor "+len(feat))
 
     # for data in list:
     #     list=[]
@@ -300,6 +305,7 @@ def encoding(X_data, lvl_hvs, id_hvs, D, bin_len, x_min, L):
 def hd_cluster(X, num_clusters, max_iter=10, quantize=False):
     scores = []
     for _ in range(max_iter):
+        print("in hd_cluster")
         scores.append(hd_cluster_worker(X, num_clusters))
     
     model = sorted(scores, key=lambda x: x[1])[-1]
@@ -352,6 +358,7 @@ def init_kmpp(X, num_clusters):
 
     cluster_ixs = set([-1])
     for k in range(num_clusters):
+        print("in init_kmpp")
         d2 = np.power(dists, 2)
         pr = d2 / np.sum(d2)
 

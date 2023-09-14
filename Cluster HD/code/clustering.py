@@ -8,6 +8,11 @@ import numpy as np
 # import tensorflow as tf
 # from tensorflow import keras
 # from tensorflow.keras import layers
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from emnist import extract_training_samples, extract_test_samples
 
 import numpy as np
 from sklearn.datasets import fetch_openml
@@ -39,11 +44,13 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["ChainLink"]
+    list = ["Emnist_8_layers"]
     sparseList=["100"]
     dict={"Dataset":{},"100":{}}
 
     df=pd.DataFrame(dict)
+    df.to_excel("test.xlsx")
+
     # model,  y_combined ,x_combined= get_mnist_model_from_cnn()
     # layer_no=-1
     # out=""
@@ -127,7 +134,86 @@ def convert_to_grayscale(X_):
                 grayscale_row.append(grayscale_value)
         matrix_grayscale.append(grayscale_row)
     return matrix_grayscale
+def generate_cnn_128_emnist_csv():
+    x_train, y_train = extract_training_samples('letters')
 
+    # Load EMNIST letters testing data
+    x_test, y_test = extract_test_samples('letters')
+
+    x_train = x_train.astype('float32') / 255.0
+    x_test = x_test.astype('float32') / 255.0
+
+    # One-hot encode the labels
+    num_classes = 26
+    print(np.unique(y_train))
+    y_train = keras.utils.to_categorical(y_train-1, num_classes)
+    y_test = keras.utils.to_categorical(y_test-1, num_classes)
+
+    # Build the CNN model
+    model = keras.Sequential([
+        layers.Input(shape=(28, 28, 1)),
+        layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(num_classes, activation='softmax')
+    ])
+
+    # Compile the model
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # Print model summary
+    model.summary()
+
+    # Train the model
+    batch_size = 128
+    epochs = 10
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
+
+    # Evaluate the model on the test data
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print("Test loss:", score[0])
+    print("Test accuracy:", score[1])
+    feature_extractor = keras.Model(inputs=model.inputs, outputs=model.layers[-2].output)
+
+    # Extract features from the training set
+    train_features = feature_extractor.predict(x_train)
+
+    # Extract features from the test set
+    test_features = feature_extractor.predict(x_test)
+    np.save("train_features.npy",train_features)
+    np.save("test_features.npy",test_features)
+    np.save('y_train.npy',y_train)
+    np.save('y_test.npy',y_test)
+    print("Train Features shape:", train_features.shape)
+    print("Test Features shape:", test_features.shape)
+    print("y_train  shape:", y_train.shape)
+    print("y_test  shape:", y_test.shape)
+    import numpy as np
+    import pandas as pd
+
+    # Assuming you have the following variables:
+    # train_features, test_features, y_train, y_test
+
+    # Combine y_train and y_test vertically
+    y_combined = np.concatenate((y_train, y_test))
+
+    # Combine train_features and test_features horizontally
+    features_combined = np.concatenate((train_features, test_features), axis=0)
+    print(features_combined.shape)
+    # Create a list of column names
+    column_names = ['y'] + [f'feature_{i+1}' for i in range(features_combined.shape[1])]
+    print(len(column_names))
+    print(y_combined.shape)
+    # Create a DataFrame from the combined data
+    df = pd.DataFrame(np.column_stack((np.argmax(y_combined,axis=1), features_combined)), columns=column_names)
+
+    # Save the DataFrame to a CSV file
+    df.to_csv('Emnist_8_layers.csv', index=False)
+    return
+     
 
 def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
     if(dataset == 'isolet' or dataset == 'iris'):
@@ -152,6 +238,9 @@ def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
             array = np.array(y_)
             reshaped_array = array.reshape(60000)
             y_=reshaped_array.tolist()
+    elif (dataset=='Emnist_8_layers'):
+        generate_cnn_128_emnist_csv()
+        X_, y_ = read_data('%s.csv' % dataset, 0, True)
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 

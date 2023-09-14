@@ -5,12 +5,14 @@ import logging
 import parse_example
 import pandas as pd
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
 
 import numpy as np
 from sklearn.datasets import fetch_openml
+# from emnist import extract_training_samples, extract_test_samples
+
 
 #import matplotlib.pyplot as plt
 
@@ -20,7 +22,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets import make_blobs, make_classification
-from tensorflow import keras
+# from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
@@ -37,37 +39,37 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    # list = ["cfar_10","Cfar10_128_6_layers"]
-    # sparseList=["100"]
-    # dict={"Dataset":{},"100":{}}
+    list = ["ChainLink"]
+    sparseList=["100"]
+    dict={"Dataset":{},"100":{}}
 
-    # df=pd.DataFrame(dict)
-    model,  y_combined ,x_combined= get_mnist_model_from_cnn()
-    layer_no=-1
-    out=""
-    for layer in model.layers:
-        layer_no+=1
-        feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
-        feat=feature_extractor.predict(x_combined).reshape(70000,-1)
-        z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
-        out+="layer "+layer+" final :"+z
-        out+="feature_extractor "+len(feat)
-        with open('result.txt', 'w') as file:
-          file.write(out)
+    df=pd.DataFrame(dict)
+    # model,  y_combined ,x_combined= get_mnist_model_from_cnn()
+    # layer_no=-1
+    # out=""
+    # for layer in model.layers:
+    #     layer_no+=1
+    #     feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+    #     feat=feature_extractor.predict(x_combined).reshape(70000,-1)
+    #     z=do_exp(hd_encoding_dim, "data",False,100,feat,y_combined)
+    #     out+="layer "+layer+" final :"+z
+    #     out+="feature_extractor "+len(feat)
+    #     with open('result.txt', 'w') as file:
+    #       file.write(out)
 
 # The file is automatically closed when the 'with' block is exited
 
     
 
-    # for data in list:
-    #     list=[]
-    #     list.append(data)
-    #     for sparsity in sparseList:
-    #         list.append(do_exp(hd_encoding_dim, data,False,int(sparsity)))
-    #     new_row_df = pd.DataFrame([list], columns=df.columns)
-    #     df = pd.concat([df, new_row_df])
-    #     print(df)
-    # df.to_excel("outputRandomPlusStd.xlsx")
+    for data in list:
+        list=[]
+        list.append(data)
+        for sparsity in sparseList:
+            list.append(do_exp(hd_encoding_dim, data,False,int(sparsity)))
+        new_row_df = pd.DataFrame([list], columns=df.columns)
+        df = pd.concat([df, new_row_df])
+        print(df)
+    df.to_excel("test.xlsx")
     
 
 def read_data(fn, tag_col = 0, attr_name = False):
@@ -128,37 +130,35 @@ def convert_to_grayscale(X_):
 
 
 def do_exp(dim, dataset, quantize=False,sparsity=100,X_=[],y_=[]):
-    # if(dataset == 'isolet' or dataset == 'iris'):
-    #     train_data_file_name= '../dataset/FCPS/' + dataset + '/' + dataset + '_train.choir_dat'
-    #     nFeatures, nClasses, x_train, y_train = parse_example.readChoirDat(train_data_file_name)
-    #     X_ = x_train
-    #     y_ = y_train
-    # elif (dataset=='Mnist'):
-    #      genearate_mnist_csv()
-    #      X_, y_ = read_data('%s.csv' % dataset, 0, True)
-    # elif (dataset=='FashionMnist'):
-    #      genearate_fasion_mnist_csv()
-    #      X_, y_ = read_data('%s.csv' % dataset, 0, True)
-    # elif (dataset=='cfar_10'):
-    #         (x_train, y_train), (x_test, y_test) =  keras.datasets.cifar10.load_data()
-    #         # Concatenate training and testing data
-    #         X_ = np.concatenate((x_train, x_test), axis=0)
-    #         y_ = np.concatenate((y_train, y_test), axis=0)
-    #         X_=X_.tolist()
-    #         y_=y_.tolist()
-    #         X_=convert_to_grayscale(X_)
-    #         array = np.array(y_)
-    #         reshaped_array = array.reshape(60000)
-    #         y_=reshaped_array.tolist()
-    # else:
-        # X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
+    if(dataset == 'isolet' or dataset == 'iris'):
+        train_data_file_name= '../dataset/FCPS/' + dataset + '/' + dataset + '_train.choir_dat'
+        nFeatures, nClasses, x_train, y_train = parse_example.readChoirDat(train_data_file_name)
+        X_ = x_train
+        y_ = y_train
+    elif (dataset=='Mnist'):
+         genearate_mnist_csv()
+         X_, y_ = read_data('%s.csv' % dataset, 0, True)
+    elif (dataset=='FashionMnist'):
+         genearate_fasion_mnist_csv()
+         X_, y_ = read_data('%s.csv' % dataset, 0, True)
+    elif (dataset=='cfar_10'):
+            (x_train, y_train), (x_test, y_test) =  keras.datasets.cifar10.load_data()
+            # Concatenate training and testing data
+            X_ = np.concatenate((x_train, x_test), axis=0)
+            y_ = np.concatenate((y_train, y_test), axis=0)
+            X_=X_.tolist()
+            y_=y_.tolist()
+            X_=convert_to_grayscale(X_)
+            array = np.array(y_)
+            reshaped_array = array.reshape(60000)
+            y_=reshaped_array.tolist()
+    else:
+        X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 
     X_float = []
-    print(X_.shape)
-    print(y_.shape)
 
     for x in X_:
-        X_float.append(list(map(lambda c: float(c), x[:])))
+        X_float.append(list(map(lambda c: float(c), x[1:])))
     X = np.array(X_float)
     y = np.array(list(map(lambda c: float(c) - 1, y_)))
     num_clusters = np.unique(y).shape[0]
@@ -428,30 +428,30 @@ def make_sparse_standard_deviation(mat,s=5):
     # print((mat != 0).sum().sum()/mat.size)
     return mat
 
-def get_mnist_model_from_cnn():
+# def get_mnist_model_from_cnn():
 
-    # Load and preprocess the MNIST dataset
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-    x_train = x_train.reshape(-1, 28, 28, 1).astype("float32") / 255.0
-    x_test = x_test.reshape(-1, 28, 28, 1).astype("float32") / 255.0
-    num_classes = 10
+#     # Load and preprocess the MNIST dataset
+#     (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+#     x_train = x_train.reshape(-1, 28, 28, 1).astype("float32") / 255.0
+#     x_test = x_test.reshape(-1, 28, 28, 1).astype("float32") / 255.0
+#     num_classes = 10
 
-    model = keras.Sequential(
-        [
-            layers.Conv2D(5, kernel_size=(3, 3), activation="relu", input_shape=(28, 28, 1)),
-            layers.MaxPooling2D(pool_size=(2, 2)),
-            layers.Conv2D(5, kernel_size=(3, 3), activation="relu"),
-            layers.MaxPooling2D(pool_size=(2, 2)),
-            layers.Flatten(),
-            layers.Dense(128, activation="relu"),  # Additional dense layer
-            layers.Dropout(0.5),
-            layers.Dense(num_classes, activation="softmax"),
-        ]
-    )
-    # Compile and train the model
-    model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-    model.fit(x_train, y_train, batch_size=128, epochs=20, validation_split=0.1)
-    return model,np.concatenate((y_train, y_test)),np.concatenate((x_train, x_test))
+#     model = keras.Sequential(
+#         [
+#             layers.Conv2D(5, kernel_size=(3, 3), activation="relu", input_shape=(28, 28, 1)),
+#             layers.MaxPooling2D(pool_size=(2, 2)),
+#             layers.Conv2D(5, kernel_size=(3, 3), activation="relu"),
+#             layers.MaxPooling2D(pool_size=(2, 2)),
+#             layers.Flatten(),
+#             layers.Dense(128, activation="relu"),  # Additional dense layer
+#             layers.Dropout(0.5),
+#             layers.Dense(num_classes, activation="softmax"),
+#         ]
+#     )
+#     # Compile and train the model
+#     model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+#     model.fit(x_train, y_train, batch_size=128, epochs=20, validation_split=0.1)
+#     return model,np.concatenate((y_train, y_test)),np.concatenate((x_train, x_test))
 
 if __name__=="__main__":
     # if len(sys.argv) != 3:

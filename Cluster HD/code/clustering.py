@@ -5,16 +5,11 @@ import logging
 import parse_example
 import pandas as pd
 import numpy as np
-# import tensorflow as tf
-# from tensorflow import keras
-# from tensorflow.keras import layers
-import numpy as np
-import tensorflow as tf
+
 from tensorflow import keras
 from tensorflow.keras import layers
 from emnist import extract_training_samples, extract_test_samples
 
-import numpy as np
 from sklearn.datasets import fetch_openml
 # from emnist import extract_training_samples, extract_test_samples
 
@@ -191,8 +186,7 @@ def generate_cnn_128_emnist_csv():
     print("Test Features shape:", test_features.shape)
     print("y_train  shape:", y_train.shape)
     print("y_test  shape:", y_test.shape)
-    import numpy as np
-    import pandas as pd
+    
 
     # Assuming you have the following variables:
     # train_features, test_features, y_train, y_test

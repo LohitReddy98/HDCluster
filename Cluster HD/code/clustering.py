@@ -11,7 +11,7 @@ import numpy as np
 # from emnist import extract_training_samples, extract_test_samples
 
 from sklearn.datasets import fetch_openml
-# from emnist import extract_training_samples, extract_test_samples
+from emnist import extract_training_samples, extract_test_samples
 
 
 #import matplotlib.pyplot as plt

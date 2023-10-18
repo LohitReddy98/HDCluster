@@ -6,15 +6,14 @@ import parse_example
 import pandas as pd
 import numpy as np
 
-# from tensorflow import keras
-# from tensorflow.keras import layers
-# from emnist import extract_training_samples, extract_test_samples
+from tensorflow import keras
+from tensorflow.keras import layers
+from emnist import extract_training_samples, extract_test_samples
 
 from sklearn.datasets import fetch_openml
 from emnist import extract_training_samples, extract_test_samples
 
-
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from idhv import HDModel
 from sklearn.svm import LinearSVC
@@ -22,7 +21,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets import make_blobs, make_classification
-# from tensorflow import keras
+from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()

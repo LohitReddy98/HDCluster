@@ -25,6 +25,8 @@ from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
+fh = logging.FileHandler('my_log_file.log')  # Specify the file name here
+LOG.addHandler(fh)
 log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ch.setFormatter(logging.Formatter(log_fmt))
 ch.setLevel(logging.INFO)
@@ -38,7 +40,8 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["Atom", "Hepta"]
+    list = ["Emnist_8_layers", "Mnist", "FashionMnist", "cfar_10", "Cfar10_128_6_layers", "FashionMnist128_6_layers", "FashionMnist128_8_layers",
+            "Mnist128_6_layers", "Mnist128_8_layers"]
     sparseList = ["100"]
     dict = {"Dataset": {}, "100": {}}
 
@@ -262,7 +265,6 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     X = np.array(X_float)
     y = np.array(list(map(lambda c: float(c) - 1, y_)))
     num_clusters = np.unique(y).shape[0]
-    print(num_clusters)
     # if num_features == 2:
     #plt.scatter(X[:,0], X[:,1], c=y, s=30, cmap=plt.cm.Paired)
     if(k):
@@ -276,8 +278,9 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
         l = K.predict(X)
         end = time.time()
         kmeans_predict_time = end - start
-        #LOG.info("K Means Accuracy: {}".format(normalized_mutual_info_score(y, l)))
         kmeans_score = normalized_mutual_info_score(y, l)
+        LOG.info("K Means Accuracy " + dataset + ": {}".format(kmeans_score))
+        return kmeans_score
 
     # kmeans_iter = K.n_iter_
 
@@ -340,14 +343,11 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     else:
         Xb = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
         PHI = np.random.normal(size=(dim, Xb.shape[1]))
-        print("PHI", PHI)
         PHI /= np.linalg.norm(PHI, axis=1).reshape(-1, 1)
         # random_sparse_function(PHI,sparsity)
         start = time.time()
         X_h = np.sign(PHI.dot(Xb.T).T)
         # X_h = (PHI.dot(Xb.T).T)
-        print("PHI", X_h)
-
         end = time.time()
         encoding_phd_time = end - start
         # np.sign(make_sparse_standard_deviation(X_h,sparsity))
@@ -370,7 +370,7 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
         lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
         end = time.time()
         phd_predict_time = end - start
-        LOG.info("HD (RP) Cluster Accuracy: {}".format(
+        LOG.info("HD (RP) Cluster Accuracy " + dataset + ": {}".format(
             normalized_mutual_info_score(y, lh2)))
         phd_score = normalized_mutual_info_score(y, lh2)
 
@@ -409,7 +409,6 @@ def encoding(X_data, lvl_hvs, id_hvs, D, bin_len, x_min, L):
 def hd_cluster(X, num_clusters, max_iter=10, quantize=False):
     scores = []
     for _ in range(max_iter):
-        print("in hd_cluster")
         scores.append(hd_cluster_worker(X, num_clusters))
 
     model = sorted(scores, key=lambda x: x[1])[-1]
@@ -462,7 +461,6 @@ def init_kmpp(X, num_clusters):
 
     cluster_ixs = set([-1])
     for k in range(num_clusters):
-        print("in init_kmpp")
         d2 = np.power(dists, 2)
         pr = d2 / np.sum(d2)
 

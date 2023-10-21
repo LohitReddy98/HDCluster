@@ -182,13 +182,6 @@ def generate_cnn_128_emnist_csv():
 
     # Extract features from the training set
     train_features = feature_extractor.predict(x_train)
-
-    # Extract features from the test set
-    test_features = feature_extractor.predict(x_test)
-    np.save("train_features.npy",train_features)
-    np.save("test_features.npy",test_features)
-    np.save('y_train.npy',y_train)
-    np.save('y_test.npy',y_test)
     print("Train Features shape:", train_features.shape)
     print("Test Features shape:", test_features.shape)
     print("y_train  shape:", y_train.shape)

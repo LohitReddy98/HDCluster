@@ -64,20 +64,20 @@ def main(D, dataset):
         lists.append(data)
         for sparsity in sparseList:
             lists.append(do_exp(hd_encoding_dim, data, False,
-                                int(sparsity), [], [], False))
+                                int(sparsity), [], [], True))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("HDRPdog.xlsx")
+        df.to_excel("baseline_dog.xlsx")
         print(df)
     for data in list:
         lists = []
         lists.append(data)
         for sparsity in sparseList:
             lists.append(do_exp(hd_encoding_dim, data, False,
-                                int(sparsity), [], [], True))
+                                int(sparsity), [], [], False))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("baseLine_dog.xlsx")
+        df.to_excel("hdrp_dog.xlsx")
         print(df)
 
 

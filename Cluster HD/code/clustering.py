@@ -257,6 +257,9 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     X = np.array(X_float)
     y = np.array(list(map(lambda c: float(c) - 1, y_)))
     num_clusters = np.unique(y).shape[0]
+    print(X.shape)
+    print(y.shape)
+
     # if num_features == 2:
     #plt.scatter(X[:,0], X[:,1], c=y, s=30, cmap=plt.cm.Paired)
     if(k):

@@ -40,8 +40,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["Emnist_8_layers", "Mnist", "FashionMnist", "cfar_10", "Cfar10_128_6_layers", "FashionMnist128_6_layers", "FashionMnist128_8_layers",
-            "Mnist128_6_layers", "Mnist128_8_layers"]
+    list = ["image_dog"]
     sparseList = ["100"]
     dict = {"Dataset": {}, "100": {}}
 
@@ -68,7 +67,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], False))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("HDRP.xlsx")
+        df.to_excel("HDRPdog.xlsx")
         print(df)
     for data in list:
         lists = []
@@ -78,7 +77,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], True))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("baseLine.xlsx")
+        df.to_excel("baseLine_dog.xlsx")
         print(df)
 
 

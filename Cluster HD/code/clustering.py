@@ -40,7 +40,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["image_dog"]
+    list = ["cfar10_128_resnet_CC"]
     sparseList = ["100"]
     dict = {"Dataset": {}, "100": {}}
 

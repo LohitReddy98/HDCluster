@@ -411,6 +411,7 @@ def hd_cluster(X, num_clusters, max_iter=10, quantize=False):
 
 
 def hd_cluster_worker(X, num_clusters, quantize=False):
+    print("hd")
     C = init_kmpp(X, num_clusters)
 
     assignments_prev = np.zeros(X.shape[0])

@@ -25,7 +25,7 @@ from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
-fh = logging.FileHandler('my_log_file.log')  # Specify the file name here
+fh = logging.FileHandler('my_log_file2.log')  # Specify the file name here
 LOG.addHandler(fh)
 log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ch.setFormatter(logging.Formatter(log_fmt))

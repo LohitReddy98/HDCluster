@@ -25,7 +25,7 @@ from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
-fh = logging.FileHandler('my_log_file2.log')  # Specify the file name here
+fh = logging.FileHandler('IDLVlog.log')  # Specify the file name here
 LOG.addHandler(fh)
 log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ch.setFormatter(logging.Formatter(log_fmt))
@@ -59,26 +59,33 @@ def main(D, dataset):
     #     with open('result.txt', 'w') as file:
     #       file.write(out)
 
+    # this for id level
     for data in list:
         lists = []
         lists.append(data)
         for sparsity in sparseList:
-            lists.append(do_exp(hd_encoding_dim, data, False,
-                                int(sparsity), [], [], True))
-        new_row_df = pd.DataFrame([lists], columns=df.columns)
-        df = pd.concat([df, new_row_df])
-        df.to_csv("baseline_mnist_resnet_cc_256.csv")
-        print(df)
-    for data in list:
-        lists = []
-        lists.append(data)
-        for sparsity in sparseList:
-            lists.append(do_exp(hd_encoding_dim, data, False,
-                                int(sparsity), [], [], False))
-        new_row_df = pd.DataFrame([lists], columns=df.columns)
-        df = pd.concat([df, new_row_df])
-        df.to_excel("hdrp_mnist_resnet_cc_256.csv")
-        print(df)
+            do_exp(hd_encoding_dim, data, False,int(sparsity), [], [], True)
+
+    # for data in list:
+    #     lists = []
+    #     lists.append(data)
+    #     for sparsity in sparseList:
+    #         lists.append(do_exp(hd_encoding_dim, data, False,
+    #                             int(sparsity), [], [], True))
+    #     new_row_df = pd.DataFrame([lists], columns=df.columns)
+    #     df = pd.concat([df, new_row_df])
+    #     df.to_csv("baseline_mnist_resnet_cc_256.csv")
+    #     print(df)
+    # for data in list:
+    #     lists = []
+    #     lists.append(data)
+    #     for sparsity in sparseList:
+    #         lists.append(do_exp(hd_encoding_dim, data, False,
+    #                             int(sparsity), [], [], False))
+    #     new_row_df = pd.DataFrame([lists], columns=df.columns)
+    #     df = pd.concat([df, new_row_df])
+    #     df.to_csv("hdrp_mnist_resnet_cc_256.csv")
+    #     print(df)
 
 
 def read_data(fn, tag_col=0, attr_name=False):
@@ -251,7 +258,7 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 
     X_float = []
-
+    D=10000
     for x in X_:
         X_float.append(list(map(lambda c: float(c), x[1:])))
     X = np.array(X_float)
@@ -262,130 +269,130 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
 
     # if num_features == 2:
     #plt.scatter(X[:,0], X[:,1], c=y, s=30, cmap=plt.cm.Paired)
-    if(k):
-        K = KMeans(n_clusters=num_clusters, n_init=5)
-        start = time.time()
-        K.fit(X)
-        end = time.time()
-        kmeans_fit_time = end - start
+    # if(k):
+        # K = KMeans(n_clusters=num_clusters, n_init=5)
+    #     start = time.time()
+    #     K.fit(X)
+    #     end = time.time()
+    #     kmeans_fit_time = end - start
 
-        start = time.time()
-        l = K.predict(X)
-        end = time.time()
-        kmeans_predict_time = end - start
-        kmeans_score = normalized_mutual_info_score(y, l)
-        LOG.info("K Means Accuracy " + dataset + ": {}".format(kmeans_score))
-        return kmeans_score
+    #     start = time.time()
+    #     l = K.predict(X)
+    #     end = time.time()
+    #     kmeans_predict_time = end - start
+    #     kmeans_score = normalized_mutual_info_score(y, l)
+    #     LOG.info("K Means Accuracy " + dataset + ": {}".format(kmeans_score))
+    #     return kmeans_score
 
     # kmeans_iter = K.n_iter_
 
-    #M = HDModel(X, y, dim, 100)
-    # X = np.asarray(X)
-    # L = 100
-    # cnt_id = len(X[0])
-    # id_hvs = []
-    # for i in range(cnt_id):
-    #     temp = [-1]*round(D/2) + [1]*round(D/2)
-    #     np.random.shuffle(temp)
-    #     id_hvs.append(np.asarray(temp))
-    # #id_hvs = map(np.int8, id_hvs)
-    # lvl_hvs = []
-    # temp = [-1]*round(D/2) + [1]*round(D/2)
-    # np.random.shuffle(temp)
-    # lvl_hvs.append(temp)
-    # change_list = list(range(0, D))
-    # np.random.shuffle(change_list)
-    # cnt_toChange = int(D/2 / (L-1))
-    # for i in range(1, L):
-    #     temp = np.array(lvl_hvs[i-1])
-    #     temp[change_list[(i-1)*cnt_toChange : i*cnt_toChange]] = -temp[change_list[(i-1)*cnt_toChange : i*cnt_toChange]]
-    #     lvl_hvs.append(temp)
-    # #lvl_hvs = map(np.int8, lvl_hvs)
-    # #lvl_hvs = list(map(int,lvl_hvs))
-    # x_min = np.min(X)
-    # x_max = np.max(X)
-    # bin_len = (x_max - x_min)/float(L)
-    # start = time.time()
-    # train_enc_hvs = encoding(X, lvl_hvs, id_hvs, dim, bin_len, x_min, L)
-    # end = time.time()
-    # encoding_id_time = end - start
-    # #print(encoding_id_time)
-    # #M.buildBufferHVs("train", dim)
-    # X_h = np.array(train_enc_hvs)
+    M = HDModel(X, y, dim, 100)
+    X = np.asarray(X)
+    L = 100
+    cnt_id = len(X[0])
+    id_hvs = []
+    for i in range(cnt_id):
+        temp = [-1]*round(D/2) + [1]*round(D/2)
+        np.random.shuffle(temp)
+        id_hvs.append(np.asarray(temp))
+    #id_hvs = map(np.int8, id_hvs)
+    lvl_hvs = []
+    temp = [-1]*round(D/2) + [1]*round(D/2)
+    np.random.shuffle(temp)
+    lvl_hvs.append(temp)
+    change_list = list(range(0, D))
+    np.random.shuffle(change_list)
+    cnt_toChange = int(D/2 / (L-1))
+    for i in range(1, L):
+        temp = np.array(lvl_hvs[i-1])
+        temp[change_list[(i-1)*cnt_toChange : i*cnt_toChange]] = -temp[change_list[(i-1)*cnt_toChange : i*cnt_toChange]]
+        lvl_hvs.append(temp)
+    #lvl_hvs = map(np.int8, lvl_hvs)
+    #lvl_hvs = list(map(int,lvl_hvs))
+    x_min = np.min(X)
+    x_max = np.max(X)
+    bin_len = (x_max - x_min)/float(L)
+    start = time.time()
+    train_enc_hvs = encoding(X, lvl_hvs, id_hvs, dim, bin_len, x_min, L)
+    end = time.time()
+    encoding_id_time = end - start
+    #print(encoding_id_time)
+    #M.buildBufferHVs("train", dim)
+    X_h = np.array(train_enc_hvs)
 
-    # KH = KMeans(n_clusters = num_clusters, n_init = 5)
-    # start = time.time()
-    # KH.fit(X_h)
-    # end = time.time()
-    # kmeans_hd_fit_time = end - start
+    KH = KMeans(n_clusters = num_clusters, n_init = 5)
+    start = time.time()
+    KH.fit(X_h)
+    end = time.time()
+    kmeans_hd_fit_time = end - start
 
-    # start = time.time()
-    # lh = KH.predict(X_h)
-    # end = time.time()
-    # kmeans_hd_predict_time = end - start
-    # #LOG.info("HD (LV) KMeans Accuracy: {}".format(
-    # #    normalized_mutual_info_score(y, lh)))
-    # kmeans_hd_score = normalized_mutual_info_score(y, lh)
-    # kmeans_hd_iter = KH.n_iter_
+    start = time.time()
+    lh = KH.predict(X_h)
+    end = time.time()
+    kmeans_hd_predict_time = end - start
+    LOG.info("HD (LV) KMeans Accuracy: {}".format(
+       normalized_mutual_info_score(y, lh)))
+    kmeans_hd_score = normalized_mutual_info_score(y, lh)
+    kmeans_hd_iter = KH.n_iter_
 
-    # start = time.time()
-    # lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
-    # end = time.time()
-    # hd_predict_time = end - start
-    # LOG.info("HD (LV) Cluster Accuracy: {}".format(
-    #    normalized_mutual_info_score(y, lh2)))
-    # hd_score = normalized_mutual_info_score(y, lh2)
-    else:
-        Xb = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
-        PHI = np.random.normal(size=(dim, Xb.shape[1]))
-        PHI /= np.linalg.norm(PHI, axis=1).reshape(-1, 1)
-        # random_sparse_function(PHI,sparsity)
-        start = time.time()
-        X_h = np.sign(PHI.dot(Xb.T).T)
-        # X_h = (PHI.dot(Xb.T).T)
-        end = time.time()
-        encoding_phd_time = end - start
-        # np.sign(make_sparse_standard_deviation(X_h,sparsity))
-        # KH = KMeans(n_clusters = num_clusters, n_init = 5)
-        # start = time.time()
-        # KH.fit(X_h)
-        # end = time.time()
-        # kmeans_phd_fit_time = end - start
+    start = time.time()
+    lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
+    end = time.time()
+    hd_predict_time = end - start
+    LOG.info("HD (LV) Cluster Accuracy: {}".format(
+       normalized_mutual_info_score(y, lh2)))
+    hd_score = normalized_mutual_info_score(y, lh2)
+    # else:
+    #     Xb = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
+    #     PHI = np.random.normal(size=(dim, Xb.shape[1]))
+    #     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1, 1)
+    #     # random_sparse_function(PHI,sparsity)
+    #     start = time.time()
+    #     X_h = np.sign(PHI.dot(Xb.T).T)
+    #     # X_h = (PHI.dot(Xb.T).T)
+    #     end = time.time()
+    #     encoding_phd_time = end - start
+    #     # np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    #     # KH = KMeans(n_clusters = num_clusters, n_init = 5)
+    #     # start = time.time()
+    #     # KH.fit(X_h)
+    #     # end = time.time()
+    #     # kmeans_phd_fit_time = end - start
 
-        # start = time.time()
-        # lh = KH.predict(X_h)
-        # end = time.time()
-        # kmeans_phd_predict_time = end - start
-        # LOG.info("HD (RP) KMeans Accuracy: {}".format(
-        #    normalized_mutual_info_score(y, lh)))
-        # kmeans_phd_score = normalized_mutual_info_score(y, lh)
-        # kmeans_phd_iter = KH.n_iter_
-        # return kmeans_phd_score
-        # start = time.time()
-        lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
-        end = time.time()
-        phd_predict_time = end - start
-        LOG.info("HD (RP) Cluster Accuracy " + dataset + ": {}".format(
-            normalized_mutual_info_score(y, lh2)))
-        phd_score = normalized_mutual_info_score(y, lh2)
+    #     # start = time.time()
+    #     # lh = KH.predict(X_h)
+    #     # end = time.time()
+    #     # kmeans_phd_predict_time = end - start
+    #     # LOG.info("HD (RP) KMeans Accuracy: {}".format(
+    #     #    normalized_mutual_info_score(y, lh)))
+    #     # kmeans_phd_score = normalized_mutual_info_score(y, lh)
+    #     # kmeans_phd_iter = KH.n_iter_
+    #     # return kmeans_phd_score
+    #     # start = time.time()
+    #     lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
+    #     end = time.time()
+    #     phd_predict_time = end - start
+    #     LOG.info("HD (RP) Cluster Accuracy " + dataset + ": {}".format(
+    #         normalized_mutual_info_score(y, lh2)))
+    #     phd_score = normalized_mutual_info_score(y, lh2)
 
-        #print(dim, samples_per_cluster, num_clusters, num_features, cluster_std)
-        # synthetic data
-        '''
-        print(str(dim) + ', ' + str(samples_per_cluster) + ', ' + str(num_clusters) + ', ' + str(num_features) + ', ' + 
-            str(cluster_std) + ', ' + str(kmeans_score) + ', ' + str(kmeans_fit_time) + ', ' + str(kmeans_predict_time) + ', ' + 
-            str(kmeans_hd_score) + ', ' + str(hd_score) + ', ' + str(encoding_id_time) + ', ' + 
-            str(kmeans_hd_fit_time) + ', ' + str(kmeans_hd_predict_time) + ', ' + str(hd_predict_time) + ', ' + 
-            str(kmeans_phd_score) + ', ' + str(phd_score) + ', ' + str(encoding_phd_time) + ', ' + 
-            str(kmeans_phd_fit_time) + ', ' + str(kmeans_phd_predict_time) + ', ' + str(phd_predict_time))
-        '''
-        # print(str(dim) + ', ' + dataset + ', ' + str(kmeans_score) + ', ' + str(kmeans_fit_time) + ', ' + str(kmeans_predict_time) + ', ' +
-        #     str(kmeans_hd_score) + ', ' + str(hd_score) + ', ' + str(encoding_id_time) + ', ' +
-        #     str(kmeans_hd_fit_time) + ', ' + str(kmeans_hd_predict_time) + ', ' + str(hd_predict_time) + ', ' +
-        #     str(kmeans_phd_score) + ', ' + str(phd_score) + ', ' + str(encoding_phd_time) + ', ' +
-        #     str(kmeans_phd_fit_time) + ', ' + str(kmeans_phd_predict_time) + ', ' + str(phd_predict_time) + ', ' +
-        #     str(kmeans_iter) + ', ' + str(kmeans_hd_iter) + ', ' + str(kmeans_phd_iter))
-        return phd_score
+    #     #print(dim, samples_per_cluster, num_clusters, num_features, cluster_std)
+    #     # synthetic data
+    #     '''
+    #     print(str(dim) + ', ' + str(samples_per_cluster) + ', ' + str(num_clusters) + ', ' + str(num_features) + ', ' + 
+    #         str(cluster_std) + ', ' + str(kmeans_score) + ', ' + str(kmeans_fit_time) + ', ' + str(kmeans_predict_time) + ', ' + 
+    #         str(kmeans_hd_score) + ', ' + str(hd_score) + ', ' + str(encoding_id_time) + ', ' + 
+    #         str(kmeans_hd_fit_time) + ', ' + str(kmeans_hd_predict_time) + ', ' + str(hd_predict_time) + ', ' + 
+    #         str(kmeans_phd_score) + ', ' + str(phd_score) + ', ' + str(encoding_phd_time) + ', ' + 
+    #         str(kmeans_phd_fit_time) + ', ' + str(kmeans_phd_predict_time) + ', ' + str(phd_predict_time))
+    #     '''
+    #     # print(str(dim) + ', ' + dataset + ', ' + str(kmeans_score) + ', ' + str(kmeans_fit_time) + ', ' + str(kmeans_predict_time) + ', ' +
+    #     #     str(kmeans_hd_score) + ', ' + str(hd_score) + ', ' + str(encoding_id_time) + ', ' +
+    #     #     str(kmeans_hd_fit_time) + ', ' + str(kmeans_hd_predict_time) + ', ' + str(hd_predict_time) + ', ' +
+    #     #     str(kmeans_phd_score) + ', ' + str(phd_score) + ', ' + str(encoding_phd_time) + ', ' +
+    #     #     str(kmeans_phd_fit_time) + ', ' + str(kmeans_phd_predict_time) + ', ' + str(phd_predict_time) + ', ' +
+    #     #     str(kmeans_iter) + ', ' + str(kmeans_hd_iter) + ', ' + str(kmeans_phd_iter))
+    #     return phd_score
 
 
 def encoding(X_data, lvl_hvs, id_hvs, D, bin_len, x_min, L):

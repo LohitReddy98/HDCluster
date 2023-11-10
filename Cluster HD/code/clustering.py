@@ -40,7 +40,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["mnist_resnet_cc_128_non_normalized"]
+    list = ["cifar_resnet_cc_128_non_normalized"]
     sparseList = ["100"]
     dict = {"Dataset": {}, "100": {}}
 
@@ -67,7 +67,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], True))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("baseline_mnist_resnet_cc_128_non_normalized.xlsx")
+        df.to_excel("baseline_cifar_resnet_cc_128_non_normalized.xlsx")
         print(df)
     for data in list:
         lists = []
@@ -77,7 +77,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], False))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("hdrp_mnist_resnet_cc_128_non_normalized.xlsx")
+        df.to_excel("hdrp_cifar_resnet_cc_128_non_normalized.xlsx")
         print(df)
 
 

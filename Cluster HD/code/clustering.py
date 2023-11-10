@@ -67,7 +67,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], True))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("baseline_cc_mnist.xlsx")
+        df.to_excel("baseline_cc_emnist.xlsx")
         print(df)
     for data in list:
         lists = []
@@ -77,7 +77,7 @@ def main(D, dataset):
                                 int(sparsity), [], [], False))
         new_row_df = pd.DataFrame([lists], columns=df.columns)
         df = pd.concat([df, new_row_df])
-        df.to_excel("hdrp_cc_mnist.xlsx")
+        df.to_excel("hdrp_cc_emnist.xlsx")
         print(df)
 
 

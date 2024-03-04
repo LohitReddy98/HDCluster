@@ -25,7 +25,7 @@ from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
-fh = logging.FileHandler('ALL.log')  # Specify the file name here
+fh = logging.FileHandler('sparse.log')  # Specify the file name here
 LOG.addHandler(fh)
 log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ch.setFormatter(logging.Formatter(log_fmt))
@@ -41,8 +41,8 @@ def main(D, dataset):
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
     list = ["mnist_resnet_cc_512"]
-    sparseList = ["100"]
-    dict = {"Dataset": {}, "100": {}}
+    sparseList = ["100","90","80","70","60","50","40","30","20","10","5","1"]
+    dict = {"Dataset": {}, "100": {}, "90": {}, "80": {}, "70": {}, "60": {}, "50": {}, "40": {}, "30": {}, "20": {}, "10": {}, "5": {}, "1": {}}
 
     df = pd.DataFrame(dict)
 
@@ -63,8 +63,11 @@ def main(D, dataset):
     for data in list:
         lists = []
         lists.append(data)
+        LOG.info("data:"+data) 
         for sparsity in sparseList:
-            do_exp(hd_encoding_dim, data, False,int(sparsity), [], [], True)
+            x=do_exp(hd_encoding_dim, data, False,int(sparsity), [], [], True)
+            LOG.info("HD (RP) Cluster Accuracy Sparsity:"+sparsity+""+format(x))
+            
 
     # for data in list:
     #     lists = []
@@ -343,27 +346,28 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     Xb = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
     PHI = np.random.normal(size=(dim, Xb.shape[1]))
     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1, 1)
-    # random_sparse_function(PHI,sparsity)
+    PHI = random_sparse_function(PHI,sparsity)
     start = time.time()
     X_h = np.sign(PHI.dot(Xb.T).T)
     # X_h = (PHI.dot(Xb.T).T)
     end = time.time()
     encoding_phd_time = end - start
-    np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    # np.sign(make_sparse_standard_deviation(X_h,sparsity))
+    np.sign(X_h)
     KH = KMeans(n_clusters = num_clusters, n_init = 5)
     start = time.time()
     KH.fit(X_h)
     end = time.time()
     kmeans_phd_fit_time = end - start
 
-    start = time.time()
-    lh = KH.predict(X_h)
-    end = time.time()
-    kmeans_phd_predict_time = end - start
-    LOG.info("HD (RP) KMeans Accuracy: {}".format(
-       normalized_mutual_info_score(y, lh)))
-    kmeans_phd_score = normalized_mutual_info_score(y, lh)
-    kmeans_phd_iter = KH.n_iter_
+    # start = time.time()
+    # # lh = KH.predict(X_h)
+    # end = time.time()
+    # kmeans_phd_predict_time = end - start
+    # LOG.info("HD (RP) KMeans Accuracy: {}".format(
+    #    normalized_mutual_info_score(y, lh)))
+    # kmeans_phd_score = normalized_mutual_info_score(y, lh)
+    # kmeans_phd_iter = KH.n_iter_
     # start = time.time()
     lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
     end = time.time()
@@ -371,7 +375,7 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     LOG.info("HD (RP) Cluster Accuracy " + dataset + ": {}".format(
         normalized_mutual_info_score(y, lh2)))
     phd_score = normalized_mutual_info_score(y, lh2)
-
+    return phd_score
     #print(dim, samples_per_cluster, num_clusters, num_features, cluster_std)
     # synthetic data
     '''

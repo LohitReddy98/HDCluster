@@ -321,28 +321,28 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     #M.buildBufferHVs("train", dim)
     X_h = np.array(train_enc_hvs)
 
-    KH = KMeans(n_clusters = num_clusters, n_init = 5)
-    start = time.time()
-    KH.fit(X_h)
-    end = time.time()
-    kmeans_hd_fit_time = end - start
+    # KH = KMeans(n_clusters = num_clusters, n_init = 5)
+    # start = time.time()
+    # KH.fit(X_h)
+    # end = time.time()
+    # kmeans_hd_fit_time = end - start
 
-    start = time.time()
-    lh = KH.predict(X_h)
-    end = time.time()
-    kmeans_hd_predict_time = end - start
-    LOG.info("HD (LV) KMeans Accuracy: {}".format(
-       normalized_mutual_info_score(y, lh)))
-    kmeans_hd_score = normalized_mutual_info_score(y, lh)
-    kmeans_hd_iter = KH.n_iter_
+    # start = time.time()
+    # lh = KH.predict(X_h)
+    # end = time.time()
+    # kmeans_hd_predict_time = end - start
+    # LOG.info("HD (LV) KMeans Accuracy: {}".format(
+    #    normalized_mutual_info_score(y, lh)))
+    # kmeans_hd_score = normalized_mutual_info_score(y, lh)
+    # kmeans_hd_iter = KH.n_iter_
 
-    start = time.time()
-    lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
-    end = time.time()
-    hd_predict_time = end - start
-    LOG.info("HD (LV) Cluster Accuracy: {}".format(
-       normalized_mutual_info_score(y, lh2)))
-    hd_score = normalized_mutual_info_score(y, lh2)
+    # start = time.time()
+    # lh2 = hd_cluster(X_h, num_clusters, quantize=quantize)
+    # end = time.time()
+    # hd_predict_time = end - start
+    # LOG.info("HD (LV) Cluster Accuracy: {}".format(
+    #    normalized_mutual_info_score(y, lh2)))
+    # hd_score = normalized_mutual_info_score(y, lh2)
     Xb = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
     PHI = np.random.normal(size=(dim, Xb.shape[1]))
     PHI /= np.linalg.norm(PHI, axis=1).reshape(-1, 1)

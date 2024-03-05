@@ -37,9 +37,9 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["cifar_resnet_cc_512"]
-    sparseList = ["100","80","60","40","20","5","1"]
-    dict = {"Dataset": {}, "100": {}, "80": {}, "60": {}, "40": {}, "20": {}, "5": {}, "1": {}}
+    list = ["fashionMnist_resnet_cc_128"]
+    sparseList = ["1","5","20","40","60","80","100"]
+    dict = {"Dataset": {}, "1": {}, "5": {}, "20": {}, "40": {}, "60": {}, "80": {}, "100": {}}
 
     df = pd.DataFrame(dict)
 

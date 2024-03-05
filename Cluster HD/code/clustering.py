@@ -6,8 +6,6 @@ import parse_example
 import pandas as pd
 import numpy as np
 
-from tensorflow import keras
-from tensorflow.keras import layers
 from emnist import extract_training_samples, extract_test_samples
 
 from sklearn.datasets import fetch_openml
@@ -21,7 +19,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets import make_blobs, make_classification
-from tensorflow import keras
 
 LOG = logging.getLogger(os.path.basename(__file__))
 ch = logging.StreamHandler()
@@ -40,7 +37,7 @@ def main(D, dataset):
     # list = ["Atom","Chainlink","EngyTime","Golfball","Hepta","Lsun","Target","Tetra","TwoDiamonds","WingNut","iris","isolet"]
     # sparseList=["100","90","80","70","60","50","40","30","20","10","5","1"]
     # dict={"Dataset":{},"100":{},"90":{},"80":{},"70":{},"60":{},"50":{},"40":{},"30":{},"20":{},"10":{},"5":{},"1":{}}
-    list = ["mnist_resnet_cc_512"]
+    list = ["cifar_resnet_cc_512"]
     sparseList = ["100","80","60","40","20","5","1"]
     dict = {"Dataset": {}, "100": {}, "80": {}, "60": {}, "40": {}, "20": {}, "5": {}, "1": {}}
 
@@ -152,81 +149,81 @@ def convert_to_grayscale(X_):
     return matrix_grayscale
 
 
-def generate_cnn_128_emnist_csv():
-    x_train, y_train = extract_training_samples('letters')
+# def generate_cnn_128_emnist_csv():
+#     x_train, y_train = extract_training_samples('letters')
 
-    # Load EMNIST letters testing data
-    x_test, y_test = extract_test_samples('letters')
+#     # Load EMNIST letters testing data
+#     x_test, y_test = extract_test_samples('letters')
 
-    x_train = x_train.astype('float32') / 255.0
-    x_test = x_test.astype('float32') / 255.0
+#     x_train = x_train.astype('float32') / 255.0
+#     x_test = x_test.astype('float32') / 255.0
 
-    # One-hot encode the labels
-    num_classes = 26
-    print(np.unique(y_train))
-    y_train = keras.utils.to_categorical(y_train-1, num_classes)
-    y_test = keras.utils.to_categorical(y_test-1, num_classes)
+#     # One-hot encode the labels
+#     num_classes = 26
+#     print(np.unique(y_train))
+#     y_train = keras.utils.to_categorical(y_train-1, num_classes)
+#     y_test = keras.utils.to_categorical(y_test-1, num_classes)
 
-    # Build the CNN model
-    model = keras.Sequential([
-        layers.Input(shape=(28, 28, 1)),
-        layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Flatten(),
-        layers.Dense(128, activation='relu'),
-        layers.Dense(num_classes, activation='softmax')
-    ])
+#     # Build the CNN model
+#     model = keras.Sequential([
+#         layers.Input(shape=(28, 28, 1)),
+#         layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+#         layers.MaxPooling2D(pool_size=(2, 2)),
+#         layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
+#         layers.MaxPooling2D(pool_size=(2, 2)),
+#         layers.Flatten(),
+#         layers.Dense(128, activation='relu'),
+#         layers.Dense(num_classes, activation='softmax')
+#     ])
 
-    # Compile the model
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adam', metrics=['accuracy'])
+#     # Compile the model
+#     model.compile(loss='categorical_crossentropy',
+#                   optimizer='adam', metrics=['accuracy'])
 
-    # Print model summary
-    model.summary()
+#     # Print model summary
+#     model.summary()
 
-    # Train the model
-    batch_size = 128
-    epochs = 10
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-              verbose=1, validation_data=(x_test, y_test))
+#     # Train the model
+#     batch_size = 128
+#     epochs = 10
+#     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
+#               verbose=1, validation_data=(x_test, y_test))
 
-    # Evaluate the model on the test data
-    score = model.evaluate(x_test, y_test, verbose=0)
-    print("Test loss:", score[0])
-    print("Test accuracy:", score[1])
-    feature_extractor = keras.Model(
-        inputs=model.inputs, outputs=model.layers[-2].output)
+#     # Evaluate the model on the test data
+#     score = model.evaluate(x_test, y_test, verbose=0)
+#     print("Test loss:", score[0])
+#     print("Test accuracy:", score[1])
+#     feature_extractor = keras.Model(
+#         inputs=model.inputs, outputs=model.layers[-2].output)
 
-    # Extract features from the training set
-    train_features = feature_extractor.predict(x_train)
-    print("Train Features shape:", train_features.shape)
-    print("Test Features shape:", test_features.shape)
-    print("y_train  shape:", y_train.shape)
-    print("y_test  shape:", y_test.shape)
+#     # Extract features from the training set
+#     train_features = feature_extractor.predict(x_train)
+#     print("Train Features shape:", train_features.shape)
+#     print("Test Features shape:", test_features.shape)
+#     print("y_train  shape:", y_train.shape)
+#     print("y_test  shape:", y_test.shape)
 
-    # Assuming you have the following variables:
-    # train_features, test_features, y_train, y_test
+#     # Assuming you have the following variables:
+#     # train_features, test_features, y_train, y_test
 
-    # Combine y_train and y_test vertically
-    y_combined = np.concatenate((y_train, y_test))
+#     # Combine y_train and y_test vertically
+#     y_combined = np.concatenate((y_train, y_test))
 
-    # Combine train_features and test_features horizontally
-    features_combined = np.concatenate((train_features, test_features), axis=0)
-    print(features_combined.shape)
-    # Create a list of column names
-    column_names = ['y'] + \
-        [f'feature_{i+1}' for i in range(features_combined.shape[1])]
-    print(len(column_names))
-    print(y_combined.shape)
-    # Create a DataFrame from the combined data
-    df = pd.DataFrame(np.column_stack(
-        (np.argmax(y_combined, axis=1), features_combined)), columns=column_names)
+#     # Combine train_features and test_features horizontally
+#     features_combined = np.concatenate((train_features, test_features), axis=0)
+#     print(features_combined.shape)
+#     # Create a list of column names
+#     column_names = ['y'] + \
+#         [f'feature_{i+1}' for i in range(features_combined.shape[1])]
+#     print(len(column_names))
+#     print(y_combined.shape)
+#     # Create a DataFrame from the combined data
+#     df = pd.DataFrame(np.column_stack(
+#         (np.argmax(y_combined, axis=1), features_combined)), columns=column_names)
 
-    # Save the DataFrame to a CSV file
-    df.to_csv('Emnist_8_layers.csv', index=False)
-    return
+#     # Save the DataFrame to a CSV file
+#     df.to_csv('Emnist_8_layers.csv', index=False)
+#     return
 
 
 def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
@@ -243,20 +240,9 @@ def do_exp(dim, dataset, quantize=False, sparsity=100, X_=[], y_=[], k=False):
     elif (dataset == 'FashionMnist'):
         genearate_fasion_mnist_csv()
         X_, y_ = read_data('%s.csv' % dataset, 0, True)
-    elif (dataset == 'cfar_10'):
-        (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
-        # Concatenate training and testing data
-        X_ = np.concatenate((x_train, x_test), axis=0)
-        y_ = np.concatenate((y_train, y_test), axis=0)
-        X_ = X_.tolist()
-        y_ = y_.tolist()
-        X_ = convert_to_grayscale(X_)
-        array = np.array(y_)
-        reshaped_array = array.reshape(60000)
-        y_ = reshaped_array.tolist()
-    elif (dataset == 'Emnist_8_layers'):
-        generate_cnn_128_emnist_csv()
-        X_, y_ = read_data('%s.csv' % dataset, 0, True)
+    # elif (dataset == 'Emnist_8_layers'):
+    #     generate_cnn_128_emnist_csv()
+    #     X_, y_ = read_data('%s.csv' % dataset, 0, True)
     else:
         X_, y_ = read_data('../dataset/FCPS/%s.csv' % dataset, 0, True)
 
@@ -489,8 +475,8 @@ def random_sparse_function(mat, s=5):
     for i in range(len(mat)):
         for j in range(len(mat[0])):
             mat[i][j] = mat[i][j] if randint(1, 100) <= s else 0
-    # print(s)
-    # print((mat != 0).sum().sum()/mat.size)
+    print(s)
+    print((mat != 0).sum().sum()/mat.size)
     return mat
 
 
